@@ -19,7 +19,7 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Ensure Cordova variables gradle exists & Clean plugin dependency
+    - name: Fix Cordova variables & Clean flatDir issues
       run: |
         mkdir -p android/capacitor-cordova-android-plugins
         echo "ext {" > android/capacitor-cordova-android-plugins/cordova.variables.gradle
@@ -28,9 +28,15 @@ jobs:
         echo "    compileSdkVersion = 34" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
         echo "}" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
 
-        # Hapus baris yang memanggil plugin cordova di app/build.gradle jika ada
+        # Buat folder libs agar flatDir tidak error jika dicari
+        mkdir -p android/app/libs
+
+        # Komentari atau hapus baris flatDir yang bermasalah di build.gradle jika ada
         if [ -f android/app/build.gradle ]; then
-          sed -i '/capacitor-cordova-android-plugins/d' android/app/build.gradle
+          sed -i 's/flatDir/#flatDir/g' android/app/build.gradle
+        fi
+        if [ -f android/build.gradle ]; then
+          sed -i 's/flatDir/#flatDir/g' android/build.gradle
         fi
 
     - name: Grant execute permission for gradlew
