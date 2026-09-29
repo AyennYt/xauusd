@@ -34,7 +34,7 @@ jobs:
       run: |
         cd android
         chmod +x gradlew
-        ./gradlew wrapper --gradle-version 8.5
+        ./gradlew wrapper --gradle-version 8.13
 
     - name: Clean and Build Debug APK with Gradle
       run: |
@@ -46,3 +46,4 @@ jobs:
       with:
         name: app-debug-apk
         path: android/app/build/outputs/apk/debug/app-debug.apk
+        
