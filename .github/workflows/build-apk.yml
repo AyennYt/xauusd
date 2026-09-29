@@ -19,11 +19,14 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Remove missing plugin dependency from app build.gradle
+    - name: Ensure Cordova variables gradle exists
       run: |
-        if [ -f android/app/build.gradle ]; then
-          sed -i '/capacitor-cordova-android-plugins/d' android/app/build.gradle
-        fi
+        mkdir -p android/capacitor-cordova-android-plugins
+        echo "ext {" > android/capacitor-cordova-android-plugins/cordova.variables.gradle
+        echo "    minSdkVersion = 22" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
+        echo "    targetSdkVersion = 34" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
+        echo "    compileSdkVersion = 34" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
+        echo "}" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
 
     - name: Grant execute permission for gradlew
       run: |
@@ -41,3 +44,4 @@ jobs:
       with:
         name: app-debug-apk
         path: android/app/build/outputs/apk/debug/app-debug.apk
+        
