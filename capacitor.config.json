@@ -1,5 +1,9 @@
 {
   "appId": "com.xauusdpro.app",
   "appName": "XauusdPro",
-  "webDir": "www"
+  "webDir": "www",
+  "server": {
+    "url": "http://100.68.22.123:3001",
+    "cleartext": true
+  }
 }
