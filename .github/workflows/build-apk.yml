@@ -19,24 +19,28 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Purge problematic Cordova plugin references completely
+    - name: Ensure Cordova variables and patch capacitor build script
       run: |
-        # Hapus folder plugin cordova palsu jika ada agar tidak dicari oleh gradle
-        rm -rf android/capacitor-cordova-android-plugins
+        # 1. Buat folder dan file cordova.variables.gradle yang dicari
+        mkdir -p android/capacitor-cordova-android-plugins
+        echo "ext {" > android/capacitor-cordova-android-plugins/cordova.variables.gradle
+        echo "    minSdkVersion = 22" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
+        echo "    targetSdkVersion = 34" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
+        echo "    compileSdkVersion = 34" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
+        echo "}" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
 
-        # Bersihkan baris yang memuat kata kunci plugin tersebut dari file konfigurasi gradle
+        # 2. Tambahkan pengaman di capacitor.build.gradle agar tidak error jika file variabel dipanggil
         python3 -c '
-        import glob
-        for path in glob.glob("android/**/build.gradle", recursive=True) + glob.glob("android/**/settings.gradle", recursive=True):
-            try:
-                with open(path, "r") as f:
-                    lines = f.readlines()
-                with open(path, "w") as f:
-                    for line in lines:
-                        if "capacitor-cordova-android-plugins" not in line:
-                            f.write(line)
-            except Exception as e:
-                print(f"Skipping {path}: {e}")
+        path = "android/capacitor.build.gradle"
+        try:
+            with open(path, "r") as f:
+                content = f.read()
+            # Ubah cara load file agar tidak crash jika posisinya berubah
+            content = content.replace("apply from: \"capacitor-cordova-android-plugins/cordova.variables.gradle\"", "try { apply from: \"capacitor-cordova-android-plugins/cordova.variables.gradle\" } catch (Exception e) {}")
+            with open(path, "w") as f:
+                f.write(content)
+        except FileNotFoundError:
+            pass
         '
 
     - name: Grant execute permission for gradlew
