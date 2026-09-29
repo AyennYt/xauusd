@@ -19,21 +19,11 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Fix missing Cordova variables and settings
+    - name: Clean up unused Cordova plugin dependency
       run: |
-        mkdir -p android/capacitor-cordova-android-plugins
-        if [ ! -f android/capacitor-cordova-android-plugins/cordova.variables.gradle ]; then
-          echo "ext {" > android/capacitor-cordova-android-plugins/cordova.variables.gradle
-          echo "    minSdkVersion = 22" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
-          echo "    targetSdkVersion = 34" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
-          echo "    compileSdkVersion = 34" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
-          echo "}" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
-        fi
-        
-        # Pastikan modul terdaftar di settings.gradle jika belum ada
-        if ! grep -q "capacitor-cordova-android-plugins" android/settings.gradle; then
-          echo "include(':capacitor-cordova-android-plugins')" >> android/settings.gradle
-          echo "project(':capacitor-cordova-android-plugins').projectDir = new File('../capacitor-cordova-android-plugins')" >> android/settings.gradle
+        # Hapus baris include capacitor-cordova-android-plugins jika ada di settings.gradle
+        if [ -f android/settings.gradle ]; then
+          sed -i '/capacitor-cordova-android-plugins/d' android/settings.gradle
         fi
 
     - name: Grant execute permission for gradlew
