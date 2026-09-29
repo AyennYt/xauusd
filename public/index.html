@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XAUUSD PRO TERMINAL</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#07090e">
+    <style>
+        :root {
+            --bg-color: #07090e;
+            --card-bg: linear-gradient(135deg, #131722 0%, #0e1219 100%);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-main: #f0f3fa;
+            --text-muted: #787b86;
+            --accent-gold: #f7931a;
+            --sell-color: #f23645;
+            --buy-color: #089981;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+        h1 {
+            font-size: 13px;
+            letter-spacing: 1px;
+            color: var(--accent-gold);
+            margin: 0;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .badge-live {
+            background: rgba(8, 153, 129, 0.15);
+            color: var(--buy-color);
+            border: 1px solid rgba(8, 153, 129, 0.3);
+            padding: 4px 8px;
+            font-size: 9px;
+            border-radius: 6px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .card-title {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.8px;
+            font-weight: 600;
+        }
+        .signal-box {
+            text-align: center;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+            box-shadow: 0 0 25px rgba(242, 54, 69, 0.2);
+            background: linear-gradient(135deg, rgba(242, 54, 69, 0.25) 0%, rgba(242, 54, 69, 0.1) 100%);
+            color: var(--sell-color);
+            border: 1px solid rgba(242, 54, 69, 0.4);
+            animation: pulseGlow 2s infinite;
+        }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 15px rgba(242, 54, 69, 0.2); }
+            50% { box-shadow: 0 0 30px rgba(242, 54, 69, 0.4); }
+            100% { box-shadow: 0 0 15px rgba(242, 54, 69, 0.2); }
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .sub-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 11px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            margin-top: 4px;
+        }
+        th, td {
+            padding: 8px 4px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .impact-high {
+            color: var(--sell-color);
+            font-weight: 700;
+            background: rgba(242, 54, 69, 0.1);
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ XAUUSD PRO TERMINAL</h1>
+            <div class="badge-live" id="serverTime">ONLINE</div>
+        </header>
+
+        <div id="signalContainer" class="signal-box">
+            🔴 RECOMMENDATION: STRONG SELL
+        </div>
+
+        <div class="card" style="padding: 0; overflow: hidden; border-radius: 12px;">
+            <div class="tradingview-widget-container" style="height:350px;width:100%">
+              <div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
+              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+              {
+                "width": "100%",
+                "height": "350",
+                "symbol": "OANDA:XAUUSD",
+                "interval": "60",
+                "timezone": "Asia/Jakarta",
+                "theme": "dark",
+                "style": "1",
+                "locale": "id",
+                "allow_symbol_change": false,
+                "calendar": false,
+                "hide_side_toolbar": true,
+                "support_host": "https://www.tradingview.com"
+              }
+              </script>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Technical Structure & Levels (H1)</div>
+            <div class="grid-2">
+                <div class="sub-card">
+                    <div style="color: var(--text-muted); font-size: 9px; margin-bottom: 3px;">Market Structure</div>
+                    <div style="font-weight: 700; color: var(--sell-color); font-size: 11px;">BEARISH STRUCTURE (H1)</div>
+                </div>
+                <div class="sub-card">
+                    <div style="color: var(--text-muted); font-size: 9px; margin-bottom: 3px;">RSI Momentum</div>
+                    <div style="font-weight: 700; color: var(--accent-gold); font-size: 11px;">31.50 (Oversold)</div>
+                </div>
+                <div class="sub-card" style="margin-top: 4px;">
+                    <div style="color: var(--text-muted); font-size: 9px; margin-bottom: 3px;">Support Level</div>
+                    <div style="font-weight: 700; color: var(--text-main); font-size: 11px;">Dynamic (H1 Low)</div>
+                </div>
+                <div class="sub-card" style="margin-top: 4px;">
+                    <div style="color: var(--text-muted); font-size: 9px; margin-bottom: 3px;">Resistance Level</div>
+                    <div style="font-weight: 700; color: var(--text-main); font-size: 11px;">Dynamic (H1 High)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Economic Calendar (Myfxbook Style)</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Event / Time</th>
+                        <th>Act</th>
+                        <th>Cons</th>
+                        <th>Prev</th>
+                    </tr>
+                </thead>
+                <tbody id="calendarTable">
+                    <tr><td colspan="4" style="text-align:center; color: var(--text-muted);">Syncing economic data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('serverTime').innerText = now.toLocaleTimeString() + ' WIB';
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        async function fetchCalendar() {
+            try {
+                const res = await fetch('/api/news-list');
+                const data = await res.json();
+                if(data.success) {
+                    const tbody = document.getElementById('calendarTable');
+                    tbody.innerHTML = '';
+                    data.events.forEach(ev => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>
+                                <div style="font-weight: 500;">${ev.name}</div>
+                                <div style="font-size: 8px; color: var(--text-muted); margin-top: 2px;">${ev.date} ${ev.time} | <span class="impact-high">${ev.impact}</span></div>
+                            </td>
+                            <td>${ev.actual || '-'}</td>
+                            <td>${ev.consensus}</td>
+                            <td>${ev.previous}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (e) {
+                console.error("Gagal memuat kalender:", e);
+            }
+        }
+        fetchCalendar();
+    </script>
+</body>
+</html>
