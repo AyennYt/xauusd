@@ -19,9 +19,9 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Ultimate Cordova & Gradle Fixer
+    - name: Deep Clean flatDir and Fix Cordova variables
+     # eslint-disable-next-line no-template-curly-in-string
       run: |
-        # 1. Buat folder dan isi file variabel yang wajib ada
         mkdir -p android/capacitor-cordova-android-plugins
         echo "ext {" > android/capacitor-cordova-android-plugins/cordova.variables.gradle
         echo "    minSdkVersion = 22" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
@@ -29,18 +29,25 @@ jobs:
         echo "    compileSdkVersion = 34" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
         echo "}" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
 
-        # 2. Bersihkan baris dependensi plugin dari app/build.gradle jika masih ada
+        # Buat folder libs agar jika ada flatDir yang mengarah ke libs, foldernya benar-benar ada
+        mkdir -p android/app/libs
+        mkdir -p android/libs
+
+        # Hapus semua blok flatDir menggunakan Python secara menyeluruh dari semua file build.gradle
         python3 -c '
-        path = "android/app/build.gradle"
-        try:
-            with open(path, "r") as f:
-                lines = f.readlines()
-            with open(path, "w") as f:
-                for line in lines:
-                    if "capacitor-cordova-android-plugins" not in line:
-                        f.write(line)
-        except FileNotFoundError:
-            pass
+        import glob, re
+        for path in glob.glob("android/**/build.gradle", recursive=True):
+            try:
+                with open(path, "r") as f:
+                    content = f.read()
+                # Hapus blok flatDir {...} sepenuhnya
+                cleaned = re.sub(r"flatDir\s*\{[^}]*\}", "", content)
+                # Hapus juga baris tunggal flatDir jika ada
+                cleaned = re.sub(r".*flatDir.*", "", cleaned)
+                with open(path, "w") as f:
+                    f.write(cleaned)
+            except Exception as e:
+                print(f"Error cleaning {path}: {e}")
         '
 
     - name: Grant execute permission for gradlew
