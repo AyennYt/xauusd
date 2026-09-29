@@ -19,6 +19,17 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
+    - name: Fix missing Cordova variables gradle
+      run: |
+        mkdir -p android/capacitor-cordova-android-plugins
+        if [ ! -f android/capacitor-cordova-android-plugins/cordova.variables.gradle ]; then
+          echo "ext {" > android/capacitor-cordova-android-plugins/cordova.variables.gradle
+          echo "    minSdkVersion = 22" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
+          echo "    targetSdkVersion = 34" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
+          echo "    compileSdkVersion = 34" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
+          echo "}" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
+        fi
+
     - name: Grant execute permission for gradlew
       run: |
         cd android
