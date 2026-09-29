@@ -19,9 +19,9 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Deep Clean flatDir and Fix Cordova variables
-     # eslint-disable-next-line no-template-curly-in-string
+    - name: Nuclear Fix - Rewrite settings.gradle clean
       run: |
+        # Buat folder variabel yang dibutuhkan capacitor
         mkdir -p android/capacitor-cordova-android-plugins
         echo "ext {" > android/capacitor-cordova-android-plugins/cordova.variables.gradle
         echo "    minSdkVersion = 22" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
@@ -29,25 +29,24 @@ jobs:
         echo "    compileSdkVersion = 34" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
         echo "}" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
 
-        # Buat folder libs agar jika ada flatDir yang mengarah ke libs, foldernya benar-benar ada
-        mkdir -p android/app/libs
-        mkdir -p android/libs
+        # Timpa total settings.gradle agar bersih dari modul cordova yang error
+        echo "include ':app'" > android/settings.gradle
+        echo "include(':capacitor-android')" >> android/settings.gradle
+        echo "project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/android/capacitor')" >> android/settings.gradle
 
-        # Hapus semua blok flatDir menggunakan Python secara menyeluruh dari semua file build.gradle
+        # Hapus baris dependensi plugin dari app/build.gradle jika ada
         python3 -c '
-        import glob, re
-        for path in glob.glob("android/**/build.gradle", recursive=True):
-            try:
-                with open(path, "r") as f:
-                    content = f.read()
-                # Hapus blok flatDir {...} sepenuhnya
-                cleaned = re.sub(r"flatDir\s*\{[^}]*\}", "", content)
-                # Hapus juga baris tunggal flatDir jika ada
-                cleaned = re.sub(r".*flatDir.*", "", cleaned)
-                with open(path, "w") as f:
-                    f.write(cleaned)
-            except Exception as e:
-                print(f"Error cleaning {path}: {e}")
+        path = "android/app/build.gradle"
+        try:
+            with open(path, "r") as f:
+                content = f.read()
+            import re
+            content = re.sub(r".*capacitor-cordova-android-plugins.*", "", content)
+            content = re.sub(r"flatDir\s*\{[^}]*\}", "", content)
+            with open(path, "w") as f:
+                f.write(content)
+        except Exception:
+            pass
         '
 
     - name: Grant execute permission for gradlew
