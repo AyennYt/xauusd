@@ -19,7 +19,7 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Fix Cordova variables & Remove flatDir completely
+    - name: Fix Cordova variables & Purge flatDir block completely
       run: |
         mkdir -p android/capacitor-cordova-android-plugins
         echo "ext {" > android/capacitor-cordova-android-plugins/cordova.variables.gradle
@@ -31,13 +31,20 @@ jobs:
         # Buat folder libs agar aman
         mkdir -p android/app/libs
 
-        # Hapus baris yang mengandung kata flatDir dari file build.gradle
-        if [ -f android/app/build.gradle ]; then
-          sed -i '/flatDir/d' android/app/build.gradle
-        fi
-        if [ -f android/build.gradle ]; then
-          sed -i '/flatDir/d' android/build.gradle
-        fi
+        # Hapus seluruh blok flatDir dari file build.gradle menggunakan python agar bersih total
+        python3 -c '
+        for path in ["android/app/build.gradle", "android/build.gradle"]:
+            try:
+                with open(path, "r") as f:
+                    content = f.read()
+                # Hapus kemunculan flatDir sampai kurung kurawal tutupnya
+                import re
+                cleaned = re.sub(r"flatDir\s*\{[^}]*\}", "", content)
+                with open(path, "w") as f:
+                    f.write(cleaned)
+            except FileNotFoundError:
+                pass
+        '
 
     - name: Grant execute permission for gradlew
       run: |
