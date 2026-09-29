@@ -19,9 +19,8 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Ensure Cordova variables and patch capacitor build script
+    - name: Purge cordova plugins dependency from capacitor build script
       run: |
-        # 1. Buat folder dan file cordova.variables.gradle yang dicari
         mkdir -p android/capacitor-cordova-android-plugins
         echo "ext {" > android/capacitor-cordova-android-plugins/cordova.variables.gradle
         echo "    minSdkVersion = 22" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
@@ -29,16 +28,16 @@ jobs:
         echo "    compileSdkVersion = 34" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
         echo "}" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
 
-        # 2. Tambahkan pengaman di capacitor.build.gradle agar tidak error jika file variabel dipanggil
+        # Hapus baris apply/dependency yang memanggil capacitor-cordova-android-plugins di capacitor.build.gradle
         python3 -c '
         path = "android/capacitor.build.gradle"
         try:
             with open(path, "r") as f:
-                content = f.read()
-            # Ubah cara load file agar tidak crash jika posisinya berubah
-            content = content.replace("apply from: \"capacitor-cordova-android-plugins/cordova.variables.gradle\"", "try { apply from: \"capacitor-cordova-android-plugins/cordova.variables.gradle\" } catch (Exception e) {}")
+                lines = f.readlines()
             with open(path, "w") as f:
-                f.write(content)
+                for line in lines:
+                    if "capacitor-cordova-android-plugins" not in line:
+                        f.write(line)
         except FileNotFoundError:
             pass
         '
