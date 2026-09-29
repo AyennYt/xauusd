@@ -19,11 +19,10 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Clean up unused Cordova plugin dependency
+    - name: Remove missing plugin dependency from app build.gradle
       run: |
-        # Hapus baris include capacitor-cordova-android-plugins jika ada di settings.gradle
-        if [ -f android/settings.gradle ]; then
-          sed -i '/capacitor-cordova-android-plugins/d' android/settings.gradle
+        if [ -f android/app/build.gradle ]; then
+          sed -i '/capacitor-cordova-android-plugins/d' android/app/build.gradle
         fi
 
     - name: Grant execute permission for gradlew
