@@ -19,8 +19,17 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Remove plugin dependency line completely
+    - name: Ultimate Cordova & Gradle Fixer
       run: |
+        # 1. Buat folder dan isi file variabel yang wajib ada
+        mkdir -p android/capacitor-cordova-android-plugins
+        echo "ext {" > android/capacitor-cordova-android-plugins/cordova.variables.gradle
+        echo "    minSdkVersion = 22" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
+        echo "    targetSdkVersion = 34" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
+        echo "    compileSdkVersion = 34" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
+        echo "}" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
+
+        # 2. Bersihkan baris dependensi plugin dari app/build.gradle jika masih ada
         python3 -c '
         path = "android/app/build.gradle"
         try:
@@ -28,7 +37,6 @@ jobs:
                 lines = f.readlines()
             with open(path, "w") as f:
                 for line in lines:
-                    # Buang baris apa pun yang memuat cordova plugins
                     if "capacitor-cordova-android-plugins" not in line:
                         f.write(line)
         except FileNotFoundError:
