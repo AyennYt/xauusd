@@ -19,23 +19,16 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Purge cordova plugins dependency from capacitor build script
+    - name: Remove plugin dependency line completely
       run: |
-        mkdir -p android/capacitor-cordova-android-plugins
-        echo "ext {" > android/capacitor-cordova-android-plugins/cordova.variables.gradle
-        echo "    minSdkVersion = 22" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
-        echo "    targetSdkVersion = 34" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
-        echo "    compileSdkVersion = 34" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
-        echo "}" >> android/capacitor-cordova-android-plugins/cordova.variables.gradle
-
-        # Hapus baris apply/dependency yang memanggil capacitor-cordova-android-plugins di capacitor.build.gradle
         python3 -c '
-        path = "android/capacitor.build.gradle"
+        path = "android/app/build.gradle"
         try:
             with open(path, "r") as f:
                 lines = f.readlines()
             with open(path, "w") as f:
                 for line in lines:
+                    # Buang baris apa pun yang memuat cordova plugins
                     if "capacitor-cordova-android-plugins" not in line:
                         f.write(line)
         except FileNotFoundError:
